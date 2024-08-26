@@ -12,6 +12,10 @@ db.sqlite3-journal
 # Virtual Environment
 venv/
 .env
+.env.example
+
+# static files
+staticfiles
 
 # IDEs
 .vscode/

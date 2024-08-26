@@ -1,6 +1,56 @@
 # Admissions Tracker
 
-This project is a web application for tracking university admissions.
+Admissions Tracker is a web application built with Django that allows users to track and share their university admission experiences. Users can create posts about their applications, view others' experiences, and gain insights into the admission process for various universities.
+
+## Features
+
+- Create and view admission posts
+- Basic styling with Bootstrap and custom CSS
+- Simple client-side form validation with JavaScript
+- Responsive design for various screen sizes
+
+## Technology Stack
+
+- Backend: Django 3.2
+- Frontend: HTML, CSS, JavaScript
+- CSS Framework: Bootstrap 4.5
+- Database: SQLite (development)
+
+## Project Structure
+
+```
+admissions_tracker/
+├── admissions_tracker/
+│   ├── settings/
+│   │   ├── base.py
+│   │   ├── local.py
+│   │   └── production.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── tracker/
+│   ├── migrations/
+│   ├── templates/
+│   │   └── tracker/
+│   │       ├── base.html
+│   │       ├── home.html
+│   │       └── create_post.html
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── static/
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── main.js
+├── manage.py
+├── requirements.txt
+└── README.md
+```
 
 ## Setup Instructions
 
@@ -12,7 +62,7 @@ This project is a web application for tracking university admissions.
 
 2. Create a virtual environment and activate it:
    ```
-   python3 -m venv venv
+   python -m venv venv
    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
@@ -21,31 +71,54 @@ This project is a web application for tracking university admissions.
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file in the project root and add the necessary environment variables:
-   ```
-   DJANGO_SECRET_KEY=your_secret_key_here
-   DJANGO_DEBUG=True
-   DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-   ```
-
-5. Run migrations:
+4. Set up the database:
    ```
    python manage.py migrate
    ```
 
-6. Start the development server:
+5. Create a superuser:
+   ```
+   python manage.py createsuperuser
+   ```
+
+6. Run the development server:
    ```
    python manage.py runserver
    ```
 
 7. Open a web browser and navigate to `http://localhost:8000`
 
-## Development vs Production
+## Development Approach
 
-- For local development, the project uses SQLite and local file storage.
-- For production, configure the necessary environment variables for database and AWS S3 storage.
+1. Project Initialization:
+   - Set up Django project with a custom user model
+   - Created the 'tracker' app for admission-related functionality
 
+2. Model Design:
+   - Designed the AdmissionPost model to store application details
 
+3. View and Template Creation:
+   - Implemented views for displaying and creating posts
+   - Created templates using Django's template language and Bootstrap for styling
 
-## License
+4. Form Handling:
+   - Created forms for user input and implemented form processing in views
+
+5. Static Files:
+   - Added custom CSS for additional styling
+   - Implemented JavaScript for client-side interactivity and form validation
+
+6. Testing:
+   - Wrote basic tests for models and views
+
+7. Documentation:
+   - Created this README for project overview and setup instructions
+
+## Next Steps
+
+- Implement user authentication and authorization
+- Add more advanced filtering and sorting options
+- Create user profiles and dashboards
+- Implement a commenting system
+- Add data visualization for admission trends
 

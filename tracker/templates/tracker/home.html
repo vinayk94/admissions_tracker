@@ -1,0 +1,18 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+    <h1>Recent Admission Posts</h1>
+    {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.get_degree_type_display }} in {{ post.major }} at {{ post.university }}</h5>
+                <p class="card-text">Status: {{ post.get_status_display }}</p>
+                <p class="card-text">GPA: {{ post.gpa|default:"N/A" }}</p>
+                <p class="card-text">{{ post.test_type }}: {{ post.test_score|default:"N/A" }}</p>
+                <p class="card-text"><small class="text-muted">Posted on {{ post.created_at }}</small></p>
+            </div>
+        </div>
+    {% empty %}
+        <p>No admission posts yet.</p>
+    {% endfor %}
+{% endblock %}
