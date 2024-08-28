@@ -1,0 +1,71 @@
+{% extends 'tracker/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="action-buttons">
+                <button id="toggle-filters" class="btn btn-secondary">Select Filters</button>
+                <button id="toggle-form" class="btn btn-primary">Submit Your Entry</button>
+            </div>
+            <div id="filters-container" style="display: none;">
+                <select name="university">
+                    <option value="">All Universities</option>
+                    {% for uni in universities %}
+                        <option value="{{ uni }}">{{ uni }}</option>
+                    {% endfor %}
+                </select>
+                <select name="degree_type">
+                    <option value="">All Degree Types</option>
+                    {% for key, value in degree_choices %}
+                        <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    {% for key, value in status_choices %}
+                        <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="form-container" style="display: none;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="timeline">
+                {% for post in posts %}
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="post-header">
+                            <span class="status-indicator {{ post.status|lower }}"></span>
+                            <h4>{{ post.get_status_display }} to {{ post.university }}</h4>
+                        </div>
+                        <span class="post-date">{{ post.created_at|date:"F d, Y g:i a" }} ET</span>
+                        <div class="post-details">
+                            <p><strong>{{ post.get_degree_type_display }}</strong> in <strong>{{ post.major }}</strong> | Round: {{ post.application_round }} | Notification: {{ post.notification_method }}</p>
+                            {% if post.gpa %}<p>GPA: {{ post.gpa }}/{{ post.gpa_scale }}</p>{% endif %}
+                            {% if post.test_type and post.test_score %}<p>{{ post.test_type }}: {{ post.test_score }}</p>{% endif %}
+                            <p>Student Type: {{ post.get_student_type_display }}</p>
+                            {% if post.post_grad_plans %}<p>Post Graduation Plans: {{ post.post_grad_plans }}</p>{% endif %}
+                            {% if post.notes %}<p>Notes: {{ post.notes }}</p>{% endif %}
+                        </div>
+                        <div class="timeline-footer">
+                            <a href="#" class="like-btn">Like (0)</a>
+                            <a href="#" class="comment-btn">Show Comments (0)</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

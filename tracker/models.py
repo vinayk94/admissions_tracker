@@ -13,10 +13,16 @@ class AdmissionPost(models.Model):
 
     STATUS_CHOICES = [
         ('APPLIED', 'Applied'),
+        ('APPLYING', 'Applying'),
         ('ACCEPTED', 'Accepted'),
+        ('ACCEPTED FROM WAITLIST', 'Accepted from Waitlist'),
         ('REJECTED', 'Rejected'),
+        ('REJECTED FROM WAITLIST', 'Rejected from Waitlist'),
         ('WAITLISTED', 'Waitlisted'),
         ('INTERVIEW', 'Interview Invite'),
+        ('ENROLLED', 'Enrolled'),
+        ('QUESTION', 'Question'),
+        ('NOTES', 'Notes'),
     ]
 
     STUDENT_TYPE_CHOICES = [
@@ -42,7 +48,7 @@ class AdmissionPost(models.Model):
     
     # Application Details
     application_round = models.CharField(max_length=20)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=24, choices=STATUS_CHOICES)
     notification_method = models.CharField(max_length=20)
     
     # Academic Information

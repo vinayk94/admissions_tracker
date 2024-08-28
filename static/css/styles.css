@@ -1,26 +1,93 @@
 body {
     font-family: Arial, sans-serif;
-    line-height: 1.6;
+    background-color: #f5f5f5;
     color: #333;
 }
 
 .container {
-    max-width: 960px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.card {
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.form-group {
+.action-buttons {
     margin-bottom: 20px;
+}
+
+.action-buttons button {
+    margin-right: 10px;
+}
+
+#filters-container, #form-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+#filters-container select, #form-container input, #form-container select, #form-container textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.timeline-item {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.timeline-content {
+    position: relative;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.status-indicator.applied { background-color: #007bff; }
+.status-indicator.accepted { background-color: #28a745; }
+.status-indicator.rejected { background-color: #dc3545; }
+.status-indicator.waitlisted { background-color: #ffc107; }
+.status-indicator.interview { background-color: #17a2b8; }
+
+.post-date {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.timeline-content h4 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.post-details p {
+    margin: 5px 0;
+}
+
+.timeline-footer {
+    margin-top: 10px;
+}
+
+.timeline-footer a {
+    margin-right: 10px;
+    color: #007bff;
+    text-decoration: none;
 }
 
 .btn-primary {
