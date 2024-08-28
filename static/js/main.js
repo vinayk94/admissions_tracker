@@ -1,60 +1,91 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded");
+    console.log('DOM fully loaded');
 
-    // Existing smooth scrolling code
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+    function toggleElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.classList.toggle('visible');
+            console.log(`Toggled ${elementId}. Visible: ${element.classList.contains('visible')}`);
+        } else {
+            console.error(`Element with id ${elementId} not found`);
+        }
+    }
+
+    const toggleFilters = document.getElementById('toggle-filters');
+    const toggleForm = document.getElementById('toggle-form');
+
+    if (toggleFilters) {
+        console.log('Toggle filters button found');
+        toggleFilters.addEventListener('click', function() {
+            console.log('Toggle filters clicked');
+            toggleElement('filters-container');
+        });
+    } else {
+        console.error('Toggle filters button not found');
+    }
+
+    if (toggleForm) {
+        console.log('Toggle form button found');
+        toggleForm.addEventListener('click', function() {
+            console.log('Toggle form clicked');
+            toggleElement('form-container');
+        });
+    } else {
+        console.error('Toggle form button not found');
+    }
+
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
+            console.log('Like button clicked');
+            const postId = this.dataset.postId;
+            fetch(`/api/like/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Like response:', data);
+                this.textContent = `Like (${data.likes_count})`;
+                if (data.authenticated) {
+                    this.classList.toggle('liked', data.liked);
+                } else {
+                    if (confirm('You need to be logged in to like posts. Would you like to log in now?')) {
+                        window.location.href = '/accounts/login/?next=' + encodeURIComponent(window.location.pathname);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
             });
         });
     });
 
-    // Existing form validation code
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            const requiredFields = form.querySelectorAll('[required]');
-            requiredFields.forEach(field => {
-                if (!field.value) {
-                    event.preventDefault();
-                    field.classList.add('is-invalid');
-                } else {
-                    field.classList.remove('is-invalid');
+    document.querySelectorAll('.comment-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Comment button clicked');
+            const postId = this.dataset.postId;
+            toggleElement(`comments-${postId}`);
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
-            });
-        });
-    }
-
-    // New code for toggling filters and form
-    const toggleFilters = document.getElementById('toggle-filters');
-    const toggleForm = document.getElementById('toggle-form');
-    
-    console.log("Toggle Filters button:", toggleFilters);
-    console.log("Toggle Form button:", toggleForm);
-
-    if (toggleFilters) {
-        toggleFilters.addEventListener('click', function() {
-            console.log("Filters button clicked");
-            const filtersContainer = document.getElementById('filters-container');
-            console.log("Filters container:", filtersContainer);
-            if (filtersContainer) {
-                filtersContainer.style.display = filtersContainer.style.display === 'none' ? 'block' : 'none';
-                console.log("Filters container display:", filtersContainer.style.display);
             }
-        });
-    }
-
-    if (toggleForm) {
-        toggleForm.addEventListener('click', function() {
-            console.log("Form button clicked");
-            const formContainer = document.getElementById('form-container');
-            console.log("Form container:", formContainer);
-            if (formContainer) {
-                formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-                console.log("Form container display:", formContainer.style.display);
-            }
-        });
+        }
+        return cookieValue;
     }
 });

@@ -122,3 +122,55 @@ admissions_tracker/
 - Implement a commenting system
 - Add data visualization for admission trends
 
+## Summary of Work and Issues 8/28/2024:
+
+Authentication and User Management:
+
+Implemented registration functionality.
+Added login functionality, but users need to log in again after registration.
+Added a logout button, but its functionality needs verification.
+Issue: User appears authenticated even when not logged in.
+
+
+Post Interactions:
+
+Implemented like functionality, with the count increasing when clicked.
+Added "Show Comments" feature, but it's not fully functional.
+Comment submission form is visible, but its functionality needs verification.
+
+
+UI Components:
+
+"Select Filters" and "Submit Your Entry" buttons are present but not functioning as expected.
+The toggling of these components is registered in the console, but the UI doesn't reflect the changes.
+
+
+JavaScript and CSS:
+
+Updated main.js to handle toggling of filters and form containers.
+Modified CSS to style the togglable content, but visibility issues persist.
+
+
+Django Views and Templates:
+
+Updated views.py to handle user registration and login.
+Modified admission_dashboard.html to include new features and debug information.
+
+
+
+Pending Issues:
+
+Fix authentication status display (showing authenticated when not logged in).
+Ensure smooth login after registration without requiring a second login.
+Verify and fix the functionality of the logout button.
+Make "Select Filters" and "Submit Your Entry" components visible when toggled.
+Fully implement and test the comment submission functionality.
+Verify that likes are being saved correctly and associated with the correct user.
+
+Next Steps:
+
+Debug the authentication system to correctly reflect user status.
+Review and fix the visibility issues with togglable components.
+Implement proper error handling and user feedback for all interactions.
+Conduct thorough testing of all implemented features.
+Refactor code for better organization and maintainability.

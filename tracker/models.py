@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class AdmissionPost(models.Model):
     DEGREE_CHOICES = [
@@ -78,8 +79,26 @@ class AdmissionPost(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    email = models.EmailField(blank=True, null=True)
+    notify_comments = models.BooleanField(default=False)
+    
+    # New fields for likes and comments
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+    
+
+
     def __str__(self):
         return f"{self.get_degree_type_display()} in {self.major} at {self.university}"
 
     class Meta:
         ordering = ['-created_at']
+
+class Comment(models.Model):
+    post = models.ForeignKey(AdmissionPost, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.post}"
