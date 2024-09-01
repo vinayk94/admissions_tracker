@@ -23,9 +23,30 @@
                 </form>
             </div>
             <div id="form-container" class="toggleable-content mb-4" style="display: none;">
-                <form method="post">
+                <h2 class="form-title">Submit Your Entry</h2>
+                <form method="post" id="admission-form">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {% if field.name != 'notify_comments' %}
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            {% else %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    {{ field.label_tag }}
+                                </div>
+                            {% endif %}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

@@ -105,3 +105,96 @@ body {
 .post-details p {
     margin-bottom: 5px;
 }
+
+#form-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+#admission-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#admission-form label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #495057;
+}
+
+#admission-form input[type="text"],
+#admission-form input[type="number"],
+#admission-form input[type="email"],
+#admission-form select,
+#admission-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#admission-form input[type="text"]:focus,
+#admission-form input[type="number"]:focus,
+#admission-form input[type="email"]:focus,
+#admission-form select:focus,
+#admission-form textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+#admission-form .form-check {
+    padding-left: 1.75rem;
+    margin-top: 1rem;
+}
+
+#admission-form .form-check-input {
+    margin-left: -1.75rem;
+    margin-top: 0.3rem;
+}
+
+#admission-form .form-check-label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+#admission-form button[type="submit"] {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.3rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#admission-form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #dc3545;
+}
+
+.form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #6c757d;
+}
