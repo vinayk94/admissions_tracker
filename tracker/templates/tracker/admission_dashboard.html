@@ -9,9 +9,9 @@
                 <button id="toggle-filters" class="btn btn-secondary">Select Filters</button>
                 <button id="toggle-form" class="btn btn-primary">Submit Your Entry</button>
             </div>
-            <div id="filters-container" class="toggleable-content" style="display: none;">
+            <div id="filters-container" class="toggleable-content">
                 <form method="get">
-                    <select name="sort" id="sort-select" onchange="this.form.submit()" autocomplete="off">
+                    <select name="sort" id="sort-select" onchange="this.form.submit()">
                         <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Recent Entry</option>
                         <option value="-updated_at" {% if request.GET.sort == '-updated_at' %}selected{% endif %}>Recent Activity</option>
                         <option value="-test_score" {% if request.GET.sort == '-test_score' %}selected{% endif %}>Test Score (High to Low)</option>
@@ -19,7 +19,7 @@
                     </select>
                 </form>
             </div>
-            <div id="form-container" class="toggleable-content" style="display: none;">
+            <div id="form-container" class="toggleable-content">
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
@@ -49,54 +49,43 @@
                             {% if post.notes %}<p><strong>Notes:</strong> {{ post.notes }}</p>{% endif %}
                         </div>
                         <div class="timeline-footer">
-                            <a href="#" class="like-btn" data-post-id="{{ post.id }}">Like ({{ post.likes.count }})</a>
-                            <a href="#" class="comment-btn" data-post-id="{{ post.id }}">Show Comments ({{ post.comments.count }})</a>
-                            <div class="comments-container" id="comments-{{ post.id }}" style="display: none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-                                {% if post.comments.all %}
-                                    <ul>
-                                        {% for comment in post.comments.all %}
-                                        <li>
-                                            <strong>{{ comment.user.username }}</strong> ({{ comment.created_at|date:"F d, Y g:i a" }}):
-                                            {{ comment.content }}
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    <p>No comments yet.</p>
-                                {% endif %}
-                                {% if user.is_authenticated %}
+                            <a href="#" class="like-btn {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}" data-authenticated="{{ user.is_authenticated|yesno:"true,false" }}">
+                                Like ({{ post.likes.count }})
+                            </a>
+                            <a href="#" class="comment-btn" data-post-id="{{ post.id }}">Comments ({{ post.comments.count }})</a>
+                            <div class="comments-section" data-post-id="{{ post.id }}" style="display: none;">
+                                <div class="comments-list">
+                                    {% for comment in post.comments.all %}
+                                    <div class="comment">
+                                        <strong>{{ comment.user.username }}</strong> ({{ comment.created_at|date:"F d, Y g:i a" }}):
+                                        {{ comment.content }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="comment-form-container">
+                                    {% if user.is_authenticated %}
                                     <form class="comment-form" data-post-id="{{ post.id }}">
                                         {% csrf_token %}
-                                        <textarea name="content" required autocomplete="off"></textarea>
-                                        <button type="submit" class="btn btn-sm btn-primary">Add Comment</button>
+                                        <textarea name="content" class="form-control" rows="2" required placeholder="Write a comment..."></textarea>
+                                        <button type="submit" class="btn btn-sm btn-primary mt-2">Add Comment</button>
                                     </form>
-                                {% else %}
-                                    <p>Please <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to add a comment.</p>
-                                {% endif %}
+                                    {% else %}
+                                    <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to add a comment.</p>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                {% empty %}
+                <p>No admission posts available. Be the first to submit one!</p>
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
-
-<!-- Debug Info -->
-<div style="margin-top: 20px; padding: 10px; background-color: #f0f0f0;">
-    <h3>Debug Info:</h3>
-    <p>Number of posts: {{ posts|length }}</p>
-    <p>User authenticated: {{ user.is_authenticated }}</p>
-    <p>CSRF Token: {{ csrf_token }}</p>
-</div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}
-
-{% if user.is_authenticated %}
-    <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
-{% endif %}

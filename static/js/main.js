@@ -1,44 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
 
-    function toggleElement(elementId) {
-        const element = document.getElementById(elementId);
+    // Toggle functionality
+    function toggleElement(element) {
         if (element) {
-            element.classList.toggle('visible');
-            console.log(`Toggled ${elementId}. Visible: ${element.classList.contains('visible')}`);
+            element.style.display = element.style.display === 'none' ? 'block' : 'none';
+            console.log(`Toggled element. Visible: ${element.style.display === 'block'}`);
         } else {
-            console.error(`Element with id ${elementId} not found`);
+            console.error('Element not found');
         }
     }
 
-    const toggleFilters = document.getElementById('toggle-filters');
-    const toggleForm = document.getElementById('toggle-form');
+    // Handling clicks on filter and form toggles
+    document.getElementById('toggle-filters')?.addEventListener('click', function() {
+        toggleElement(document.getElementById('filters-container'));
+    });
 
-    if (toggleFilters) {
-        console.log('Toggle filters button found');
-        toggleFilters.addEventListener('click', function() {
-            console.log('Toggle filters clicked');
-            toggleElement('filters-container');
-        });
-    } else {
-        console.error('Toggle filters button not found');
-    }
+    document.getElementById('toggle-form')?.addEventListener('click', function() {
+        toggleElement(document.getElementById('form-container'));
+    });
 
-    if (toggleForm) {
-        console.log('Toggle form button found');
-        toggleForm.addEventListener('click', function() {
-            console.log('Toggle form clicked');
-            toggleElement('form-container');
-        });
-    } else {
-        console.error('Toggle form button not found');
-    }
-
+    // Handling clicks on the like button
     document.querySelectorAll('.like-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Like button clicked');
             const postId = this.dataset.postId;
+            const isAuthenticated = this.dataset.authenticated === 'true';
+
+            if (!isAuthenticated) {
+                if (confirm('You need to log in to like this post. Go to login page?')) {
+                    window.location.href = `/accounts/login/?next=${encodeURIComponent(window.location.pathname)}`;
+                }
+                return;
+            }
+
             fetch(`/api/like/${postId}/`, {
                 method: 'POST',
                 headers: {
@@ -48,32 +43,64 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Like response:', data);
-                this.textContent = `Like (${data.likes_count})`;
-                if (data.authenticated) {
+                if (data.success) {
+                    this.textContent = `Like (${data.likes_count})`;
                     this.classList.toggle('liked', data.liked);
-                } else {
-                    if (confirm('You need to be logged in to like posts. Would you like to log in now?')) {
-                        window.location.href = '/accounts/login/?next=' + encodeURIComponent(window.location.pathname);
-                    }
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
+            .catch(error => console.error('Error:', error));
         });
     });
 
+    // Handling clicks on the comment button
     document.querySelectorAll('.comment-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Comment button clicked');
             const postId = this.dataset.postId;
-            toggleElement(`comments-${postId}`);
+            const commentsSection = document.querySelector(`.comments-section[data-post-id="${postId}"]`);
+            toggleElement(commentsSection);
         });
     });
 
+    // Handling comment form submission
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const postId = this.dataset.postId;
+            const content = this.querySelector('textarea[name="content"]').value;
+
+            fetch(`/api/comment/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: content }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const commentsList = this.closest('.comments-section').querySelector('.comments-list');
+                    const newComment = document.createElement('div');
+                    newComment.className = 'comment';
+                    newComment.innerHTML = `
+                        <strong>${data.comment_user}</strong> (${data.comment_date}):
+                        ${data.comment_content}
+                    `;
+                    commentsList.appendChild(newComment);
+                    this.reset();
+                    
+                    // Update comment count
+                    const commentBtn = document.querySelector(`.comment-btn[data-post-id="${postId}"]`);
+                    const currentCount = parseInt(commentBtn.textContent.match(/\d+/)[0]);
+                    commentBtn.textContent = `Comments (${currentCount + 1})`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Function to get CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
