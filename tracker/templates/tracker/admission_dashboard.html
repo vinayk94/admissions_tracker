@@ -22,7 +22,26 @@
             <div id="form-container" class="toggleable-content">
                 <form method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in field.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -56,9 +75,14 @@
                             <div class="comments-section" data-post-id="{{ post.id }}" style="display: none;">
                                 <div class="comments-list">
                                     {% for comment in post.comments.all %}
-                                    <div class="comment">
-                                        <strong>{{ comment.user.username }}</strong> ({{ comment.created_at|date:"F d, Y g:i a" }}):
+                                    <div class="comment" data-comment-id="{{ comment.id }}">
+                                        <strong>{{ comment.user.get_display_name }}</strong> ({{ comment.created_at|date:"F d, Y g:i a" }}):
                                         {{ comment.content }}
+                                        {% if user == comment.user %}
+                                        <button class="delete-comment" data-comment-id="{{ comment.id }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        {% endif %}
                                     </div>
                                     {% endfor %}
                                 </div>

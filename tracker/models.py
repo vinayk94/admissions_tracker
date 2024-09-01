@@ -25,7 +25,7 @@ class User(AbstractUser):
     )
 
     def get_display_name(self):
-        return self.anonymous_username or self.username
+        return self.anonymous_username or "Anonymous User"
 
 class AdmissionPost(models.Model):
     DEGREE_CHOICES = [

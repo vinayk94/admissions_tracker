@@ -72,6 +72,8 @@ def admission_dashboard(request):
             post.save()
             messages.success(request, "Your admission post has been created successfully.")
             return redirect('admission_dashboard')
+        else:
+            messages.error(request, "There was an error with your submission. Please check the form and try again.")
     else:
         form = AdmissionPostForm()
     
@@ -80,6 +82,26 @@ def admission_dashboard(request):
         'form': form,
     }
     return render(request, 'tracker/admission_dashboard.html', context)
+
+@login_required
+@require_POST
+def add_comment(request, post_id):
+    post = get_object_or_404(AdmissionPost, id=post_id)
+    data = json.loads(request.body)
+    form = CommentForm(data)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.user = request.user
+        comment.save()
+        return JsonResponse({
+            'success': True,
+            'comment_id': comment.id,
+            'comment_content': comment.content,
+            'comment_date': comment.created_at.strftime("%B %d, %Y %I:%M %p"),
+            'comment_user': comment.user.get_display_name(),
+        })
+    return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 @require_POST
 def like_post(request, post_id):
@@ -100,25 +122,6 @@ def like_post(request, post_id):
         'liked': liked,
     })
 
-@login_required
-@require_POST
-def add_comment(request, post_id):
-    post = get_object_or_404(AdmissionPost, id=post_id)
-    data = json.loads(request.body)
-    form = CommentForm(data)
-    if form.is_valid():
-        comment = form.save(commit=False)
-        comment.post = post
-        comment.user = request.user
-        comment.save()
-        return JsonResponse({
-            'success': True,
-            'comment_id': comment.id,
-            'comment_content': comment.content,
-            'comment_date': comment.created_at.strftime("%B %d, %Y %I:%M %p"),
-            'comment_user': comment.user.username,
-        })
-    return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 @login_required
 @require_POST
