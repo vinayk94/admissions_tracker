@@ -10,9 +10,11 @@ from .forms import AdmissionPostForm, CommentForm
 from django.contrib import messages
 import json
 
+from .forms import CustomUserCreationForm
+
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -22,7 +24,7 @@ def register(request):
             for error in form.error_messages:
                 messages.error(request, form.error_messages[error])
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
 def user_login(request):
@@ -156,3 +158,13 @@ def get_comments(request, post_id):
         } for reply in comment.replies.all()]
     } for comment in comments]
     return JsonResponse({'comments': comment_data})
+
+@login_required
+@require_POST
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if comment.user == request.user:
+        post_id = comment.post.id
+        comment.delete()
+        return JsonResponse({'success': True, 'post_id': post_id})
+    return JsonResponse({'success': False, 'error': 'You are not authorized to delete this comment.'}, status=403)

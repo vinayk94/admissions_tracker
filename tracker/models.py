@@ -1,6 +1,31 @@
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    anonymous_username = models.CharField(max_length=30, unique=True, blank=True, null=True)
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+        related_name='tracker_user_set',
+        related_query_name='user',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='tracker_user_set',
+        related_query_name='user',
+    )
+
+    def get_display_name(self):
+        return self.anonymous_username or self.username
 
 class AdmissionPost(models.Model):
     DEGREE_CHOICES = [
@@ -41,7 +66,7 @@ class AdmissionPost(models.Model):
         ('AN', 'Antarctica'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     degree_type = models.CharField(max_length=5, choices=DEGREE_CHOICES)
     major = models.CharField(max_length=100)
     university = models.CharField(max_length=100)
@@ -64,7 +89,7 @@ class AdmissionPost(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(blank=True, null=True)
     notify_comments = models.BooleanField(default=False)
-    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
 
     def __str__(self):
         return f"{self.get_degree_type_display()} in {self.major} at {self.university}"
@@ -74,14 +99,13 @@ class AdmissionPost(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(AdmissionPost, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
     def __str__(self):
-        return f"Comment by {self.user.username} on {self.post}"
+        return f"Comment by {self.user.get_display_name()} on {self.post}"
 
     class Meta:
         ordering = ['created_at']
-

@@ -14,10 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handling clicks on filter and form toggles
     document.getElementById('toggle-filters')?.addEventListener('click', function() {
         toggleElement(document.getElementById('filters-container'));
+        document.getElementById('form-container').style.display = 'none';
     });
 
     document.getElementById('toggle-form')?.addEventListener('click', function() {
         toggleElement(document.getElementById('form-container'));
+        document.getElementById('filters-container').style.display = 'none';
     });
 
     // Handling clicks on the like button
@@ -86,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     newComment.innerHTML = `
                         <strong>${data.comment_user}</strong> (${data.comment_date}):
                         ${data.comment_content}
+                        <button class="delete-comment" data-comment-id="${data.comment_id}">Delete</button>
                     `;
                     commentsList.appendChild(newComment);
                     this.reset();
@@ -94,10 +97,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     const commentBtn = document.querySelector(`.comment-btn[data-post-id="${postId}"]`);
                     const currentCount = parseInt(commentBtn.textContent.match(/\d+/)[0]);
                     commentBtn.textContent = `Comments (${currentCount + 1})`;
+
+                    // Add event listener for the new delete button
+                    newComment.querySelector('.delete-comment').addEventListener('click', deleteComment);
                 }
             })
             .catch(error => console.error('Error:', error));
         });
+    });
+
+    // Function to delete a comment
+    function deleteComment(e) {
+        const commentId = e.target.dataset.commentId;
+        fetch(`/api/delete_comment/${commentId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                e.target.closest('.comment').remove();
+                // Update comment count
+                const commentBtn = document.querySelector(`.comment-btn[data-post-id="${data.post_id}"]`);
+                const currentCount = parseInt(commentBtn.textContent.match(/\d+/)[0]);
+                commentBtn.textContent = `Comments (${currentCount - 1})`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Add event listeners for existing delete buttons
+    document.querySelectorAll('.delete-comment').forEach(button => {
+        button.addEventListener('click', deleteComment);
     });
 
     // Function to get CSRF token
