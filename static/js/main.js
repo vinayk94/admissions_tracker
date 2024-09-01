@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const postId = this.dataset.postId;
             const content = this.querySelector('textarea[name="content"]').value;
-    
+
             fetch(`/api/comment/${postId}/`, {
                 method: 'POST',
                 headers: {
@@ -85,11 +85,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const commentsList = this.closest('.comments-section').querySelector('.comments-list');
                     const newComment = document.createElement('div');
                     newComment.className = 'comment';
-                    newComment.dataset.commentId = data.comment_id;
                     newComment.innerHTML = `
                         <strong>${data.comment_user}</strong> (${data.comment_date}):
                         ${data.comment_content}
-                        <button class="delete-comment" data-comment-id="${data.comment_id}">
+                        <button class="btn btn-sm btn-danger delete-comment float-right" data-comment-id="${data.comment_id}">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     `;
@@ -100,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const commentBtn = document.querySelector(`.comment-btn[data-post-id="${postId}"]`);
                     const currentCount = parseInt(commentBtn.textContent.match(/\d+/)[0]);
                     commentBtn.textContent = `Comments (${currentCount + 1})`;
-    
+
                     // Add event listener for the new delete button
                     newComment.querySelector('.delete-comment').addEventListener('click', deleteComment);
                 }

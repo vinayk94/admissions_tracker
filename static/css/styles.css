@@ -1,64 +1,17 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: #f8f9fa;
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.action-buttons {
-    margin-bottom: 20px;
-}
-
-.action-buttons button {
-    margin-right: 10px;
-}
-
-#filters-container, #form-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    border: 1px solid #dee2e6;
-}
-
-.toggleable-content {
-    display: none;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #f9f9f9;
-}
-
-
-
-#filters-container select, #form-container input, #form-container select, #form-container textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
 }
 
 .timeline-item {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 20px;
+    transition: box-shadow 0.3s ease-in-out;
 }
 
-.timeline-content {
-    position: relative;
-}
-
-.post-date {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-    display: block;
+.timeline-item:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .post-header {
@@ -73,93 +26,82 @@ body {
     height: 20px;
     border-radius: 50%;
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
-.status-indicator.applied { background-color: #007bff; }
-.status-indicator.accepted { background-color: #28a745; }
-.status-indicator.rejected { background-color: #dc3545; }
-.status-indicator.waitlisted { background-color: #ffc107; }
-.status-indicator.interview { background-color: #17a2b8; }
-
-.post-details p {
-    margin-bottom: 5px;
+.post-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
 }
 
-.post-details strong {
-    font-weight: bold;
+.status-indicator.applied { background-color: #007bff; } /* Blue: Neutral, in-progress */
+.status-indicator.applying { background-color: #6610f2; } /* Purple: Active, ongoing */
+.status-indicator.accepted { background-color: #28a745; } /* Green: Positive outcome */
+.status-indicator.accepted_from_waitlist { background-color: #20c997; } /* Teal Green: Positive, but conditional */
+.status-indicator.rejected { background-color: #dc3545; } /* Red: Negative outcome */
+.status-indicator.rejected_from_waitlist { background-color: #fd7e14; } /* Orange: Conditional rejection */
+.status-indicator.waitlisted { background-color: #ffc107; } /* Yellow: Caution, still waiting */
+.status-indicator.interview { background-color: #17a2b8; } /* Teal: Positive, in-progress */
+.status-indicator.enrolled { background-color: #6f42c1; } /* Dark Purple: Final positive outcome */
+.status-indicator.question { background-color: #ffdd57; } /* Yellow: Caution, question or query */
+.status-indicator.notes { background-color: #6c757d; } /* Gray: Neutral, information */
+
+.post-date {
+    font-size: 0.9rem;
 }
 
-.timeline-footer {
-    margin-top: 15px;
-}
-
-.timeline-footer a {
-    margin-right: 15px;
-    color: #007bff;
-    text-decoration: none;
-}
-
-.comment-form textarea {
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.liked {
-    color: #007bff;
-    font-weight: bold;
-}
-
-.form-check {
-    margin-bottom: 15px;
-}
-
-.form-text {
-    font-size: 0.875em;
-    color: #6c757d;
-}
-
-.btn-primary {
+.like-btn.liked {
     background-color: #007bff;
-    border-color: #007bff;
+    color: white;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.comment {
+    background-color: #f1f3f5;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.toggleable-content {
-    display: none;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #f9f9f9;
-}
-
-.toggleable-content.visible {
-    display: block !important;
+.delete-comment {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
 }
 
 #filters-container, #form-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
+    background-color: #ffffff;
     border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
 }
 
-#filters-container select, #form-container input, #form-container select, #form-container textarea {
+/* Add some spacing between form fields */
+#admission-form p {
+    margin-bottom: 15px;
+}
+
+/* Style form labels */
+#admission-form label {
+    font-weight: bold;
+}
+
+/* Style form inputs and selects */
+#admission-form input[type="text"],
+#admission-form input[type="number"],
+#admission-form input[type="email"],
+#admission-form select,
+#admission-form textarea {
     width: 100%;
     padding: 8px;
-    margin: 5px 0;
     border: 1px solid #ced4da;
     border-radius: 4px;
 }
 
-.toggleable-content {
-    display: none;
+/* Style the submit button */
+#admission-form button[type="submit"] {
+    margin-top: 10px;
 }
 
-.toggleable-content.visible {
-    display: block;
+/* Add some spacing in the post details */
+.post-details p {
+    margin-bottom: 5px;
 }
