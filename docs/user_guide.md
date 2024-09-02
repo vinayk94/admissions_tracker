@@ -1,4 +1,4 @@
-```markdown
+
 # User Guide for Django Admissions Tracker
 
 Welcome to the Django Admissions Tracker! This guide will help you navigate and use the application effectively.
@@ -79,7 +79,6 @@ Welcome to the Django Admissions Tracker! This guide will help you navigate and 
 
 - If you're unable to log in, use the "Forgot Password" link on the login page to reset your password.
 - If you're not seeing your post after submission, refresh the page or check if it's on the next page of results.
-- For any technical issues, please contact support at support@admissionstracker.com.
+- For any technical issues, please contact support at trackeradmissions@gmail.com.
 
 We hope you find the Django Admissions Tracker helpful in your academic journey!
-```

@@ -1,5 +1,5 @@
 
-```markdown
+
 # Contributing to Django Admissions Tracker
 
 We welcome contributions to the Django Admissions Tracker project! This document outlines the process for contributing to the project.
@@ -68,4 +68,3 @@ We are committed to fostering a welcoming and inclusive community. We expect all
 - Provide as much detail as possible, including steps to reproduce for bugs.
 
 Thank you for contributing to Django Admissions Tracker!
-```

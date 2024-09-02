@@ -1,4 +1,4 @@
-```markdown
+
 # API Documentation
 
 This document outlines the API endpoints available in the Django Admissions Tracker project.

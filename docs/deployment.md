@@ -1,4 +1,4 @@
-```markdown
+
 # Deployment Guide
 
 This guide provides detailed instructions for deploying the Django Admissions Tracker project to a production environment.
@@ -139,5 +139,3 @@ This guide provides detailed instructions for deploying the Django Admissions Tr
 - If you encounter a "502 Bad Gateway" error, check the Gunicorn socket file permissions and the Nginx configuration.
 - For database connection issues, verify the database credentials in the `.env` file and ensure the PostgreSQL service is running.
 - If static files are not loading, check the `STATIC_ROOT` setting in your Django settings and ensure you've run `collectstatic`.
-
-```

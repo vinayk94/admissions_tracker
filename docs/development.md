@@ -1,5 +1,5 @@
 
-```markdown
+
 # Development Guide for Django Admissions Tracker
 
 This guide provides information for developers working on the Django Admissions Tracker project.
@@ -69,4 +69,3 @@ admissions_tracker/
 │   ├── templates/
 │   ├── tests.py
 │
-```
