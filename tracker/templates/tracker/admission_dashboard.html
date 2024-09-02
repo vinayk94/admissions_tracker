@@ -1,38 +1,52 @@
 {% extends 'tracker/base.html' %}
 {% load static %}
+{% load custom_filters %}
+
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="action-buttons">
+            <h1 class="mt-4 mb-4">Admissions Tracker Dashboard</h1>
+            <div class="action-buttons mb-4">
                 <button id="toggle-filters" class="btn btn-secondary">Select Filters</button>
                 <button id="toggle-form" class="btn btn-primary">Submit Your Entry</button>
             </div>
-            <div id="filters-container" style="display: none;">
-                <select name="university">
-                    <option value="">All Universities</option>
-                    {% for uni in universities %}
-                        <option value="{{ uni }}">{{ uni }}</option>
-                    {% endfor %}
-                </select>
-                <select name="degree_type">
-                    <option value="">All Degree Types</option>
-                    {% for key, value in degree_choices %}
-                        <option value="{{ key }}">{{ value }}</option>
-                    {% endfor %}
-                </select>
-                <select name="status">
-                    <option value="">All Statuses</option>
-                    {% for key, value in status_choices %}
-                        <option value="{{ key }}">{{ value }}</option>
-                    {% endfor %}
-                </select>
+            <div id="filters-container" class="toggleable-content mb-4" style="display: none;">
+                <form method="get">
+                    <select name="sort" id="sort-select" class="form-control" onchange="this.form.submit()">
+                        <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Recent Entry</option>
+                        <option value="-updated_at" {% if request.GET.sort == '-updated_at' %}selected{% endif %}>Recent Activity</option>
+                        <option value="-test_score" {% if request.GET.sort == '-test_score' %}selected{% endif %}>Test Score (High to Low)</option>
+                        <option value="test_score" {% if request.GET.sort == 'test_score' %}selected{% endif %}>Test Score (Low to High)</option>
+                    </select>
+                </form>
             </div>
-            <div id="form-container" style="display: none;">
-                <form method="post">
+            <div id="form-container" class="toggleable-content mb-4" style="display: none;">
+                <h2 class="form-title">Submit Your Entry</h2>
+                <form method="post" id="admission-form">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {% if field.name != 'notify_comments' %}
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            {% else %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    {{ field.label_tag }}
+                                </div>
+                            {% endif %}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -42,30 +56,69 @@
         <div class="col-md-12">
             <div class="timeline">
                 {% for post in posts %}
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="post-header">
-                            <span class="status-indicator {{ post.status|lower }}"></span>
-                            <h4>{{ post.get_status_display }} to {{ post.university }}</h4>
-                        </div>
-                        <span class="post-date">{{ post.created_at|date:"F d, Y g:i a" }} ET</span>
-                        <div class="post-details">
-                            <p><strong>{{ post.get_degree_type_display }}</strong> in <strong>{{ post.major }}</strong> | Round: {{ post.application_round }} | Notification: {{ post.notification_method }}</p>
-                            {% if post.gpa %}<p>GPA: {{ post.gpa }}/{{ post.gpa_scale }}</p>{% endif %}
-                            {% if post.test_type and post.test_score %}<p>{{ post.test_type }}: {{ post.test_score }}</p>{% endif %}
-                            <p>Student Type: {{ post.get_student_type_display }}</p>
-                            {% if post.post_grad_plans %}<p>Post Graduation Plans: {{ post.post_grad_plans }}</p>{% endif %}
-                            {% if post.notes %}<p>Notes: {{ post.notes }}</p>{% endif %}
-                        </div>
-                        <div class="timeline-footer">
-                            <a href="#" class="like-btn">Like (0)</a>
-                            <a href="#" class="comment-btn">Show Comments (0)</a>
+                <div class="timeline-item card mb-4">
+                    <div class="card-body">
+                        <div class="timeline-content">
+                            <span class="post-date text-muted">{{ post.created_at|date:"F d, Y g:i a" }} ET</span>
+                            <div class="post-header">
+                                <span class="status-indicator {{ post.status|lower|replace_spaces }}"></span>
+                                <h4>{{ post.get_status_display }} to {{ post.university }}</h4>
+                            </div>
+                            <div class="post-details">
+                                <p><strong>Degree:</strong> {{ post.get_degree_type_display }} in {{ post.major }}</p>
+                                <p><strong>Round:</strong> {{ post.application_round }} | <strong>Notification:</strong> {{ post.notification_method }}</p>
+                                {% if post.gpa %}<p><strong>GPA:</strong> {{ post.gpa }}/{{ post.gpa_scale }}</p>{% endif %}
+                                {% if post.test_type and post.test_score %}<p><strong>{{ post.test_type }}:</strong> {{ post.test_score }}</p>{% endif %}
+                                <p><strong>Student Type:</strong> {{ post.get_student_type_display }}</p>
+                                {% if post.post_grad_plans %}<p><strong>Post Graduation Plans:</strong> {{ post.post_grad_plans }}</p>{% endif %}
+                                {% if post.notes %}<p><strong>Notes:</strong> {{ post.notes }}</p>{% endif %}
+                            </div>
+                            <div class="timeline-footer mt-3">
+                                <button class="btn btn-sm btn-outline-primary like-btn {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}" data-authenticated="{{ user.is_authenticated|yesno:"true,false" }}">
+                                    Like ({{ post.likes.count }})
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary comment-btn" data-post-id="{{ post.id }}">
+                                    Comments ({{ post.comments.count }})
+                                </button>
+                                <div class="comments-section mt-3" data-post-id="{{ post.id }}" style="display: none;">
+                                    <div class="comments-list">
+                                        {% for comment in post.comments.all %}
+                                        <div class="comment">
+                                            <strong>{{ comment.user.get_display_name }}</strong> ({{ comment.created_at|date:"F d, Y g:i a" }}):
+                                            {{ comment.content }}
+                                            {% if user == comment.user %}
+                                            <button class="btn btn-sm btn-danger delete-comment float-right" data-comment-id="{{ comment.id }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="comment-form-container mt-3">
+                                        {% if user.is_authenticated %}
+                                        <form class="comment-form" data-post-id="{{ post.id }}">
+                                            {% csrf_token %}
+                                            <textarea name="content" class="form-control" rows="2" required placeholder="Write a comment..."></textarea>
+                                            <button type="submit" class="btn btn-sm btn-primary mt-2">Add Comment</button>
+                                        </form>
+                                        {% else %}
+                                        <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to add a comment.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% empty %}
+                <p>No admission posts available. Be the first to submit one!</p>
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/main.js' %}"></script>
 {% endblock %}
