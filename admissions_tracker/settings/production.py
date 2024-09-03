@@ -3,7 +3,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['your-render-app-name.onrender.com']
+ALLOWED_HOSTS = ['admissions-tracker.onrender.com']
 
 # Database
 DATABASES = {
