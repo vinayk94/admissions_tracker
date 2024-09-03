@@ -1,0 +1,1 @@
+web: gunicorn admissions_tracker.wsgi:application
