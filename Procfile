@@ -1,1 +1,1 @@
-web: gunicorn admissions_tracker.wsgi:application
+web: gunicorn admissions_tracker.wsgi:application -c gunicorn.conf.py
