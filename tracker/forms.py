@@ -1,7 +1,6 @@
 from django import forms
-from .models import AdmissionPost, Comment
+from .models import AdmissionPost, Comment, User
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
 
 class AdmissionPostForm(forms.ModelForm):
     class Meta:
@@ -37,13 +36,34 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3}),
         }
+
 class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
     anonymous_username = forms.CharField(max_length=30, required=False, help_text="Optional. This will be displayed instead of your username.")
 
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = User
-        fields = UserCreationForm.Meta.fields + ('anonymous_username',)
+        fields = ("username", "email", "anonymous_username", "password1", "password2")
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken. Please choose a different one.")
+        return username
+    """
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email is already in use. Please use a different email.")
+        return email
+    """
+
+    def clean_anonymous_username(self):
+        anonymous_username = self.cleaned_data.get('anonymous_username')
+        if anonymous_username and User.objects.filter(anonymous_username=anonymous_username).exists():
+            raise forms.ValidationError("This anonymous username is already taken. Please choose a different one.")
+        return anonymous_username
+    
 class UserSettingsForm(forms.ModelForm):
     class Meta:
         model = User

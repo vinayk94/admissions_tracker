@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from django.utils.crypto import get_random_string
 
 
 class User(AbstractUser):
@@ -23,6 +24,13 @@ class User(AbstractUser):
         related_name='tracker_user_set',
         related_query_name='user',
     )
+
+    email_verified = models.BooleanField(default=False)
+    verification_token = models.CharField(max_length=100, blank=True)
+
+    def generate_verification_token(self):
+        self.verification_token = get_random_string(64)
+        self.save()
 
     def get_display_name(self):
         return self.anonymous_username or "Anonymous User"

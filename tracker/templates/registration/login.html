@@ -9,6 +9,7 @@
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
     <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    <a href="{% url 'password_reset' %}">Forgot Password?</a>
 </div>
 
 <script>
@@ -28,7 +29,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     .then(data => {
         if (data.success) {
             alert(data.message);
-            window.location.href = '{% url "admission_dashboard" %}';
+            window.location.href = '{% url "admission_timeline" %}';
         } else {
             alert(data.message);
         }

@@ -12,6 +12,19 @@ from django.contrib import messages
 import json
 from .forms import UserSettingsForm
 from .forms import CustomUserCreationForm
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.contrib.sites.shortcuts import get_current_site
+
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.utils.encoding import force_str  
+from django.utils.http import urlsafe_base64_decode
+from .models import User
+
+
+
 
 @login_required
 def account_settings(request):
@@ -39,16 +52,45 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful. You are now logged in.")
-            return redirect('admission_dashboard')
-        else:
-            for error in form.error_messages:
-                messages.error(request, form.error_messages[error])
+            user = form.save(commit=False)
+            user.is_active = False  # Deactivate account till it is verified
+            user.generate_verification_token()
+            user.save()
+
+            current_site = get_current_site(request)
+            subject = 'Activate Your Account'
+            message = render_to_string('tracker/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': user.verification_token,
+            })
+            user.email_user(subject, message)
+
+            messages.success(request, 'Please confirm your email to complete registration.')
+            return redirect('login')
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and user.verification_token == token:
+        user.is_active = True
+        user.email_verified = True
+        user.verification_token = ''
+        user.save()
+        login(request, user)
+        messages.success(request, 'Your account has been activated successfully!')
+        return redirect('login')  
+    else:
+        messages.error(request, 'Activation link is invalid!')
+        return redirect('admission_timeline')  
 
 def user_login(request):
     if request.method == 'POST':
@@ -63,7 +105,7 @@ def user_login(request):
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({'success': True, 'message': f"Welcome, {username}! You have been logged in."})
                 else:
-                    return redirect('admission_dashboard')
+                    return redirect('admission_timeline')
             else:
                 messages.error(request, "Invalid username or password.")
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -80,7 +122,7 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
-    return redirect('admission_dashboard')
+    return redirect('admission_timeline')
 
 def admission_dashboard(request):
     sort_by = request.GET.get('sort', '-created_at')
