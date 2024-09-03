@@ -24,6 +24,13 @@ CACHES = {
     }
 }
 
+INSTALLED_APPS = [
+    
+    'storages',
+    
+]
+
+
 CONN_MAX_AGE = 500  # Persistent connections
 
 # AWS S3 configuration
@@ -49,3 +56,17 @@ EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

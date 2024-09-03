@@ -10,3 +10,4 @@ django-storages
 boto3
 gunicorn
 gevent==22.10.2
+django-storages
