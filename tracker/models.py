@@ -66,6 +66,16 @@ class AdmissionPost(models.Model):
         ('AN', 'Antarctica'),
     ]
 
+    TERM_CHOICES = [
+        ('FALL', 'Fall'),
+        ('SPRING', 'Spring'),
+        ('SUMMER', 'Summer'),
+        ('WINTER', 'Winter'),
+    ]
+    year = models.IntegerField(default=2025)  # Default to 2025 for existing records
+    term = models.CharField(max_length=10, choices=TERM_CHOICES, default='SPRING')  # Default to Spring for existing records
+    
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     degree_type = models.CharField(max_length=5, choices=DEGREE_CHOICES)
     major = models.CharField(max_length=100)

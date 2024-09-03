@@ -6,8 +6,10 @@ from .models import User
 class AdmissionPostForm(forms.ModelForm):
     class Meta:
         model = AdmissionPost
-        fields = ['degree_type', 'major', 'university', 'country', 'application_round', 'status', 'gpa', 'test_type', 'test_score', 'student_type', 'post_grad_plans', 'notes', 'notify_comments', 'email']
+        fields = ['degree_type', 'major', 'university', 'country', 'year', 'term', 'status', 'gpa', 'test_type', 'test_score', 'student_type', 'post_grad_plans', 'notes', 'notify_comments', 'email']
         widgets = {
+            'year': forms.NumberInput(attrs={'class': 'form-control', 'min': 2000, 'max': 2100}),
+            'term': forms.Select(attrs={'class': 'form-control'}),
             'notes': forms.Textarea(attrs={'rows': 3}),
             'notify_comments': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -41,3 +43,13 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = UserCreationForm.Meta.fields + ('anonymous_username',)
+
+class UserSettingsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'anonymous_username']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'anonymous_username': forms.TextInput(attrs={'class': 'form-control'}),
+        }

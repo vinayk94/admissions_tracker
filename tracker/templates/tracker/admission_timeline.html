@@ -1,7 +1,6 @@
 {% extends 'tracker/base.html' %}
 {% load static %}
-{% load custom_filters %}
-
+{% load tracker_custom_filters %}
 
 {% block content %}
 <div class="container">
@@ -66,7 +65,8 @@
                             </div>
                             <div class="post-details">
                                 <p><strong>Degree:</strong> {{ post.get_degree_type_display }} in {{ post.major }}</p>
-                                <p><strong>Round:</strong> {{ post.application_round }} | <strong>Notification:</strong> {{ post.notification_method }}</p>
+                                <p><strong>Year:</strong> {{ post.year }} | <strong>Term:</strong> {{ post.get_term_display }}</p>
+                                <p><strong>Round:</strong> {{ post.application_round }} | <strong>Notification:</strong> {{ post.notification_method }}</p>                                
                                 {% if post.gpa %}<p><strong>GPA:</strong> {{ post.gpa }}/{{ post.gpa_scale }}</p>{% endif %}
                                 {% if post.test_type and post.test_score %}<p><strong>{{ post.test_type }}:</strong> {{ post.test_score }}</p>{% endif %}
                                 <p><strong>Student Type:</strong> {{ post.get_student_type_display }}</p>

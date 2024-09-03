@@ -1,5 +1,5 @@
 {% extends 'tracker/base.html' %}
-
+{% load tracker_custom_filters %}
 {% block content %}
     <h1>Recent Admission Posts</h1>
     {% for post in posts %}

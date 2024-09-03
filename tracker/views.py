@@ -4,13 +4,36 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.views.generic import ListView
 from .models import AdmissionPost, Comment
 from .forms import AdmissionPostForm, CommentForm
 from django.contrib import messages
 import json
-
+from .forms import UserSettingsForm
 from .forms import CustomUserCreationForm
+
+@login_required
+def account_settings(request):
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your account settings have been updated.")
+            return redirect('account_settings')
+    else:
+        form = UserSettingsForm(instance=request.user)
+    return render(request, 'tracker/account_settings.html', {'form': form})
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "Your account has been successfully deleted.")
+        return redirect('home')
+    return redirect('account_settings')
 
 def register(request):
     if request.method == 'POST':
@@ -77,11 +100,72 @@ def admission_dashboard(request):
     else:
         form = AdmissionPostForm()
     
+    sort_by = request.GET.get('sort', '-created_at')
+    posts = AdmissionPost.objects.annotate(comment_count=Count('comments')).order_by(sort_by)
+    
     context = {
         'posts': posts,
-        'form': form,
+        'form': AdmissionPostForm(),
     }
-    return render(request, 'tracker/admission_dashboard.html', context)
+    return render(request, 'tracker/admission_timeline.html', context)
+
+class AdmissionStatsView(ListView):
+    model = AdmissionPost
+    template_name = 'tracker/admission_stats.html'
+    context_object_name = 'admissions'
+
+    STATUS_GROUPS = {
+        'admissions': ['ACCEPTED', 'ACCEPTED FROM WAITLIST', 'ENROLLED'],
+        'rejections': ['REJECTED', 'REJECTED FROM WAITLIST'],
+        'in_progress': ['APPLIED', 'APPLYING', 'WAITLISTED', 'INTERVIEW'],
+        'questions': ['QUESTION'],
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filter based on query parameters
+        filters = {}
+        if self.request.GET.get('university'):
+            filters['university__icontains'] = self.request.GET['university']
+        if self.request.GET.get('major'):
+            filters['major__icontains'] = self.request.GET['major']
+        if self.request.GET.get('degree_type'):
+            filters['degree_type'] = self.request.GET['degree_type']
+        if self.request.GET.get('year'):
+            filters['year'] = self.request.GET['year']
+        if self.request.GET.get('term'):
+            filters['term'] = self.request.GET['term']
+
+        queryset = queryset.filter(**filters)
+
+        count_type = self.request.GET.get('count_type', 'all')
+        if count_type != 'all' and count_type in self.STATUS_GROUPS:
+            queryset = queryset.filter(status__in=self.STATUS_GROUPS[count_type])
+
+        return queryset.values('university', 'major', 'degree_type', 'year', 'term').annotate(
+            admissions_count=Count('id', filter=Q(status__in=self.STATUS_GROUPS['admissions'])),
+            rejections_count=Count('id', filter=Q(status__in=self.STATUS_GROUPS['rejections'])),
+            in_progress_count=Count('id', filter=Q(status__in=self.STATUS_GROUPS['in_progress'])),
+            questions_count=Count('id', filter=Q(status__in=self.STATUS_GROUPS['questions'])),
+            total_count=Count('id')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['universities'] = AdmissionPost.objects.values_list('university', flat=True).distinct()
+        context['majors'] = AdmissionPost.objects.values_list('major', flat=True).distinct()
+        context['degree_types'] = dict(AdmissionPost.DEGREE_CHOICES)
+        context['years'] = AdmissionPost.objects.values_list('year', flat=True).distinct().order_by('-year')
+        context['terms'] = dict(AdmissionPost.TERM_CHOICES)
+        context['count_types'] = [
+            ('all', 'All Statuses'),
+            ('admissions', 'Admissions'),
+            ('rejections', 'Rejections'),
+            ('in_progress', 'In Progress'),
+            ('questions', 'Questions'),
+        ]
+        return context
 
 @login_required
 @require_POST

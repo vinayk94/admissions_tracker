@@ -1,0 +1,104 @@
+{% extends 'tracker/base.html' %}
+{% load tracker_custom_filters %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Admission Statistics</h2>
+    
+    <form method="get" class="mb-4">
+        <div class="form-row">
+            <div class="col-md-2 mb-3">
+                <label for="university">University</label>
+                <select name="university" id="university" class="form-control">
+                    <option value="">All Universities</option>
+                    {% for uni in universities %}
+                        <option value="{{ uni }}" {% if uni == request.GET.university %}selected{% endif %}>{{ uni }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label for="major">Major</label>
+                <select name="major" id="major" class="form-control">
+                    <option value="">All Majors</option>
+                    {% for maj in majors %}
+                        <option value="{{ maj }}" {% if maj == request.GET.major %}selected{% endif %}>{{ maj }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label for="degree_type">Degree Type</label>
+                <select name="degree_type" id="degree_type" class="form-control">
+                    <option value="">All Degree Types</option>
+                    {% for key, value in degree_types.items %}
+                        <option value="{{ key }}" {% if key == request.GET.degree_type %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label for="year">Year</label>
+                <select name="year" id="year" class="form-control">
+                    <option value="">All Years</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year|stringformat:"i" == request.GET.year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label for="term">Term</label>
+                <select name="term" id="term" class="form-control">
+                    <option value="">All Terms</option>
+                    {% for key, value in terms.items %}
+                        <option value="{{ key }}" {% if key == request.GET.term %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label for="count_type">Status Type</label>
+                <select name="count_type" id="count_type" class="form-control">
+                    {% for value, label in count_types %}
+                        <option value="{{ value }}" {% if value == request.GET.count_type %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>University</th>
+                <th>Major</th>
+                <th>Degree Type</th>
+                <th>Year</th>
+                <th>Term</th>
+                <th>Admissions</th>
+                <th>Rejections</th>
+                <th>In Progress</th>
+                <th>Questions</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for admission in admissions %}
+            <tr>
+                <td>{{ admission.university }}</td>
+                <td>{{ admission.major }}</td>
+                <td>{{ degree_types|dict_get:admission.degree_type }}</td>
+                <td>{{ admission.year }}</td>
+                <td>{{ terms|dict_get:admission.term }}</td>
+                <td>{{ admission.admissions_count }}</td>
+                <td>{{ admission.rejections_count }}</td>
+                <td>{{ admission.in_progress_count }}</td>
+                <td>{{ admission.questions_count }}</td>
+                <td>{{ admission.total_count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">No data available for the selected filters.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
