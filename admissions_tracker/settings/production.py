@@ -5,8 +5,16 @@ import logging
 import logging
 from django.db import connections
 from django.db.utils import OperationalError
+import logging
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 logging.basicConfig(level=logging.DEBUG)
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 DEBUG = False
 
@@ -95,5 +103,22 @@ def check_db_connection():
         logger.error("Database connection failed.")
 
 check_db_connection()
+
+
+logger = logging.getLogger(__name__)
+
+# Test S3 connection
+def check_s3_connection():
+    try:
+        # Attempt to upload a small file to S3
+        test_file_name = "test_s3_connection.txt"
+        test_file_content = ContentFile("This is a test file for S3 connection.")
+        default_storage.save(test_file_name, test_file_content)
+        logger.info("S3 connection is successful.")
+    except Exception as e:
+        logger.error(f"S3 connection failed: {e}")
+
+check_s3_connection()
+
 
 
