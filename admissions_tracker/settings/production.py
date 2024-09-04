@@ -7,12 +7,17 @@ import logging
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from dotenv import load_dotenv
+from admissions_tracker.settings.base import MIDDLEWARE
+
+MIDDLEWARE += [
+    'admissions_tracker.middleware.ThreadLocalMiddleware',
+]
 
 logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv()
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['admissions-tracker.onrender.com',  'localhost', '127.0.0.1']
 
@@ -32,10 +37,6 @@ DATABASES = {
 
 DISABLE_CONNECTION_CHECKS = True
 
-MIDDLEWARE = [
-    'admissions_tracker.middleware.ThreadLocalMiddleware',
-
-]
 
 CACHES = {
     'default': {
@@ -48,6 +49,7 @@ INSTALLED_APPS += [
     
     'storages',
     'admissions_tracker',
+    'tracker',
     
 ]
 

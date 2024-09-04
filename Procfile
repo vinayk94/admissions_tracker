@@ -1,1 +1,1 @@
-web: uvicorn admissions_tracker.asgi:application --host 0.0.0.0 --port $PORT --env-file .env
+web: uvicorn admissions_tracker.asgi:application --host 0.0.0.0 --port $PORT
