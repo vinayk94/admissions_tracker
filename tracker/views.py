@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Q
 from django.views.generic import ListView
-from .models import AdmissionPost, Comment
+from .models import AdmissionPost, Comment, User
 from .forms import AdmissionPostForm, CommentForm
 from django.contrib import messages
 import json
@@ -21,7 +21,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str  
 from django.utils.http import urlsafe_base64_decode
-from .models import User
+
 
 
 
@@ -136,8 +136,9 @@ def admission_dashboard(request):
                 post.user = request.user
             post.save()
             messages.success(request, "Your admission post has been created successfully.")
-            return redirect('admission_dashboard')
+            return redirect('admission_timeline')
         else:
+            print(form.errors)
             messages.error(request, "There was an error with your submission. Please check the form and try again.")
     else:
         form = AdmissionPostForm()

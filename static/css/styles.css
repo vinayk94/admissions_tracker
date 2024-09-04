@@ -198,3 +198,8 @@ body {
     font-size: 80%;
     color: #6c757d;
 }
+
+#admission-form select {
+    height: auto;
+    padding: 0.375rem 0.75rem;
+}

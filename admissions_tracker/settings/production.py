@@ -56,7 +56,7 @@ AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_DEFAULT_ACL = 'public-read'
-AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME') # e.g., 'us-east-1'
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME').strip() # e.g., 'us-east-1'
 
 
 # Static files configuration
