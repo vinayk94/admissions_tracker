@@ -30,9 +30,7 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
         'CONN_MAX_AGE': 0,  # disable persistent connections
-        'OPTIONS': {
-            'threaded': True,
-            },
+
     }
 }
 
