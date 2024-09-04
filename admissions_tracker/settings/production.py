@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['admissions-tracker.onrender.com', , 'custom-domain.com']
+ALLOWED_HOSTS = ['admissions-tracker.onrender.com',  'custom-domain.com']
 
 # Database
 DATABASES = {
