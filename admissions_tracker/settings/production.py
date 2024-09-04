@@ -14,7 +14,7 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['admissions-tracker.onrender.com',  'custom-domain.com']
+ALLOWED_HOSTS = ['admissions-tracker.onrender.com',  'localhost', '127.0.0.1']
 
 # Database
 DATABASES = {
@@ -33,7 +33,7 @@ DATABASES = {
 DISABLE_CONNECTION_CHECKS = True
 
 MIDDLEWARE = [
-    'middleware.ThreadLocalMiddleware',
+    'admissions_tracker.middleware.ThreadLocalMiddleware',
 
 ]
 
@@ -47,6 +47,7 @@ CACHES = {
 INSTALLED_APPS += [
     
     'storages',
+    'admissions_tracker',
     
 ]
 
