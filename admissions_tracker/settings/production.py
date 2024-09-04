@@ -46,7 +46,7 @@ INSTALLED_APPS += [
 ]
 
 
-CONN_MAX_AGE = 500  # Persistent connections
+DATABASES['default']['CONN_MAX_AGE'] = 0
 
 # AWS S3 configuration
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
