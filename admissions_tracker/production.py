@@ -1,5 +1,5 @@
 import os
-from .base import *
+from .settings.base import *
 
 import logging
 import logging
@@ -37,7 +37,7 @@ DATABASES = {
 DISABLE_CONNECTION_CHECKS = True
 
 MIDDLEWARE = [
-    'admissions_tracker.middleware.ThreadLocalMiddleware',
+    'middleware.ThreadLocalMiddleware',
 
 ]
 
