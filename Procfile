@@ -1,1 +1,1 @@
-web: gunicorn admissions_tracker.wsgi:application -c gunicorn_config.py
+web: uvicorn admissions_tracker.asgi:application --host 0.0.0.0 --port $PORT
