@@ -1,5 +1,6 @@
 import os
 from .base import *
+from .base import INSTALLED_APPS
 import logging
 from django.db import connections
 from django.db.utils import OperationalError
@@ -49,7 +50,6 @@ INSTALLED_APPS += [
     
     'storages',
     'admissions_tracker',
-    'tracker',
     
 ]
 
