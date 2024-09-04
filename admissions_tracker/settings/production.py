@@ -2,6 +2,9 @@ import os
 from .base import *
 
 import logging
+import logging
+from django.db import connections
+from django.db.utils import OperationalError
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -75,5 +78,22 @@ LOGGING = {
     },
 }
 
-print(f"AWS_BUCKET_NAME: {AWS_STORAGE_BUCKET_NAME}")
+import os
+print(f"Running on port: {os.getenv('PORT')}")
+
+
+
+logger = logging.getLogger(__name__)
+
+# Test database connection
+def check_db_connection():
+    db_conn = connections['default']
+    try:
+        db_conn.cursor()
+        logger.info("Database connection is successful.")
+    except OperationalError:
+        logger.error("Database connection failed.")
+
+check_db_connection()
+
 
