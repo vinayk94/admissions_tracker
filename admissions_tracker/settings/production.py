@@ -1,28 +1,22 @@
 import os
 from .base import *
-from .base import INSTALLED_APPS
+from .base import INSTALLED_APPS, MIDDLEWARE
 import logging
 from django.db import connections
 from django.db.utils import OperationalError
-import logging
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from dotenv import load_dotenv
-from admissions_tracker.settings.base import MIDDLEWARE
-
-MIDDLEWARE += [
-    'admissions_tracker.middleware.ThreadLocalMiddleware',
-]
-
-logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv()
 
-DEBUG = True
+logging.basicConfig(level=logging.DEBUG)
 
-ALLOWED_HOSTS = ['admissions-tracker.onrender.com',  'localhost', '127.0.0.1']
+DEBUG = False  # Set to False for production
 
-# Database
+ALLOWED_HOSTS = ['admissions-tracker.onrender.com', 'localhost', '127.0.0.1']
+
+# Database configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -31,13 +25,17 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-        'CONN_MAX_AGE': 0,  # disable persistent connections
-
+        'CONN_MAX_AGE': 0,
     }
 }
 
 DISABLE_CONNECTION_CHECKS = True
 
+MIDDLEWARE += [
+    'admissions_tracker.middleware.ThreadLocalMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
+]
 
 CACHES = {
     'default': {
@@ -47,14 +45,9 @@ CACHES = {
 }
 
 INSTALLED_APPS += [
-    
     'storages',
     'admissions_tracker',
-    
 ]
-
-
-
 
 # AWS S3 configuration
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -63,14 +56,26 @@ AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME') # e.g., 'us-east-1'
 
-# Static files
+
+# Static files configuration
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# Media files
+# Media files configuration
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Email configuration 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -90,13 +95,11 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'INFO',
     },
 }
 
 print(f"Running on port: {os.getenv('PORT')}")
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -111,13 +114,9 @@ def check_db_connection():
 
 check_db_connection()
 
-
-logger = logging.getLogger(__name__)
-
 # Test S3 connection
 def check_s3_connection():
     try:
-        # Attempt to upload a small file to S3
         test_file_name = "test_s3_connection.txt"
         test_file_content = ContentFile("This is a test file for S3 connection.")
         default_storage.save(test_file_name, test_file_content)
@@ -127,5 +126,9 @@ def check_s3_connection():
 
 check_s3_connection()
 
-
-
+# CORS configuration
+CORS_ALLOW_ALL_ORIGINS = False  # For development only, restrict this in production
+CORS_ALLOWED_ORIGINS = [
+    "https://admissions-tracker.onrender.com",
+    "http://localhost:8000",
+]
