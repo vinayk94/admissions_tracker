@@ -29,8 +29,19 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'CONN_MAX_AGE': 0,  # disable persistent connections
+        'OPTIONS': {
+            'threaded': True,
+            },
     }
 }
+
+DISABLE_CONNECTION_CHECKS = True
+
+MIDDLEWARE = [
+    'tracker.middleware.ThreadLocalMiddleware',
+
+]
 
 CACHES = {
     'default': {
@@ -46,7 +57,7 @@ INSTALLED_APPS += [
 ]
 
 
-DATABASES['default']['CONN_MAX_AGE'] = 0
+
 
 # AWS S3 configuration
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')

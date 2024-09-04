@@ -1,4 +1,1 @@
-web: gunicorn admissions_tracker.wsgi:application --workers 1 --threads 8 --timeout 120
-
-
-
+web: gunicorn admissions_tracker.wsgi:application -c gunicorn_config.py
