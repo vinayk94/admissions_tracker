@@ -39,7 +39,7 @@ DATABASES = {
 DISABLE_CONNECTION_CHECKS = True
 
 MIDDLEWARE = [
-    'tracker.middleware.ThreadLocalMiddleware',
+    'admissions_tracker.middleware.ThreadLocalMiddleware',
 
 ]
 
