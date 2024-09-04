@@ -70,3 +70,6 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
+print(f"AWS_BUCKET_NAME: {AWS_STORAGE_BUCKET_NAME}")
+
