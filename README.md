@@ -1,6 +1,6 @@
-# Django Admissions Tracker
+# Admissions Tracker
 
-Django Admissions Tracker is a web application designed to help students track and share their college or graduate school admission processes. Users can create posts about their application experiences, view others' experiences, and interact through likes and comments.
+Admissions Tracker is a web application designed to help students track and share their college or graduate school admission processes. Users can create posts about their application experiences, view others' experiences, and interact through likes and comments.
 
 ## Features
 
